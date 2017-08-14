@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Currency Converter</string>
+    <string name="amount">Tutar (TL)</string>
+    <string name="currency_type">Döviz Türü</string>
+    <string name="buying">ALIŞ</string>
+
+</resources>
