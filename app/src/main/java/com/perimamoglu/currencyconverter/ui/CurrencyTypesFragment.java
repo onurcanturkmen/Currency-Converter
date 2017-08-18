@@ -1,5 +1,6 @@
 package com.perimamoglu.currencyconverter.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -16,6 +17,11 @@ import com.perimamoglu.currencyconverter.adapters.RvCurrencyTypesAdapter;
 import com.perimamoglu.currencyconverter.interfaces.CustomItemClickListener;
 import com.perimamoglu.currencyconverter.model.Currency;
 import com.perimamoglu.currencyconverter.network.NetworkModule;
+import com.perimamoglu.currencyconverter.services.NewAddBusService;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -29,6 +35,8 @@ public class CurrencyTypesFragment extends Fragment {
 
     @BindView(R.id.rvList)RecyclerView rvList;
     View view;
+    private ArrayList<Float> currencyValue;
+    int positionNew;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,9 +56,7 @@ public class CurrencyTypesFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvList.setLayoutManager(layoutManager);
 
-
-
-        final ArrayList<Float> currencyValue = new ArrayList<>();
+        currencyValue = new ArrayList<>();
         NetworkModule.getInstance().getCurrency("TRY").enqueue(new Callback<Currency>() {
             @Override
             public void onResponse(Call<Currency> call, Response<Currency> response) {
@@ -111,15 +117,15 @@ public class CurrencyTypesFragment extends Fragment {
                 currencyType.add("USD");
                 currencyType.add("ZAR");
 
-                final ArrayList<String> flags = new ArrayList<>();
-                flags.add("R.drawable.aud");
-
-
-                RvCurrencyTypesAdapter rvCurrencyTypesAdapter = new RvCurrencyTypesAdapter(currencyValue, currencyType, flags, new CustomItemClickListener() {
+                RvCurrencyTypesAdapter rvCurrencyTypesAdapter = new RvCurrencyTypesAdapter(getContext(),currencyValue, currencyType, new CustomItemClickListener() {
                     @Override
                     public void onItemClick(View v, int position) {
+                        CurrencyConverterFragment f = new CurrencyConverterFragment();
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_currency_converter_container, f).commit();
                         Log.d("position", "Tıklanan pozisyon:" + position);
-                        Toast.makeText(getContext(),currencyValue.get(position).toString(), Toast.LENGTH_LONG).show();
+
+                        EventBus.getDefault().postSticky(new NewAddBusService(null, currencyValue.get(position), currencyType.get(position)));
 
                     }
                 });
@@ -127,6 +133,7 @@ public class CurrencyTypesFragment extends Fragment {
                 rvList.setHasFixedSize(true);
                 rvList.setAdapter(rvCurrencyTypesAdapter);
                 rvList.setItemAnimator(new DefaultItemAnimator());
+
 
             }
 

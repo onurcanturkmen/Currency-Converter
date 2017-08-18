@@ -1,5 +1,6 @@
 package com.perimamoglu.currencyconverter.adapters;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.perimamoglu.currencyconverter.R;
 import com.perimamoglu.currencyconverter.interfaces.CustomItemClickListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -26,14 +28,14 @@ public class RvCurrencyTypesAdapter extends RecyclerView.Adapter<RvCurrencyTypes
 
     private ArrayList<Float> currencyValue = new ArrayList<>();
     private ArrayList<String> currencyType = new ArrayList<>();
-    private ArrayList<String> flags = new ArrayList<>();
     private CustomItemClickListener listener;
+    Context context;
 
-    public RvCurrencyTypesAdapter(ArrayList<Float> currencyValue, ArrayList<String> currencyType, ArrayList<String> flags, CustomItemClickListener listener) {
+    public RvCurrencyTypesAdapter(Context context, ArrayList<Float> currencyValue, ArrayList<String> currencyType, CustomItemClickListener listener) {
         this.currencyValue = currencyValue;
         this.currencyType = currencyType;
-        this.flags = flags;
         this.listener = listener;
+        this.context = context;
     }
 
     @Override
@@ -55,6 +57,11 @@ public class RvCurrencyTypesAdapter extends RecyclerView.Adapter<RvCurrencyTypes
 
         holder.txtCountry.setText(currencyType.get(position).toString());
         holder.txtBuying.setText(currencyValue.get(position).toString());
+        if (currencyType.get(position).toString().equals("AUD")){
+            Picasso.with(context).load(R.drawable.aud).resize(120, 80).into(holder.imgItemFlag);
+        }else if (currencyType.get(position).toString().equals("BGN")) {
+            Picasso.with(context).load(R.drawable.bgn).resize(120, 80).into(holder.imgItemFlag);
+        }
     }
 
     @Override
